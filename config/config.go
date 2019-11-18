@@ -13,6 +13,7 @@ type Config struct {
 	S3Endpoint   string `short:"e" long:"s3-endpoint" description:"S3 endpoint"`
 
 	BucketName    string `short:"b" long:"bucket" required:"true" description:"The bucket name to check. Use '*' to check all buckets"`
+	BucketPrefix  string `short:"p" long:"prefix" description:"The bucket prefix path"`
 	VersionsCount int    `short:"n" long:"count" required:"true" description:"How many versions to keep"`
 	Confirm       bool   `long:"confirm" description:"By default it prints details for the files to be deleted, enabling this flag leads to real S3 file changes"`
 }
