@@ -7,13 +7,14 @@ import (
 	"sort"
 	"time"
 
-	"github.com/croman/delete-s3-versions/config"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/dustin/go-humanize"
+
+	"github.com/croman/delete-s3-versions/config"
+	"github.com/croman/delete-s3-versions/s3api"
 )
 
 const defaultS3Region = "eu-west-1"
@@ -35,7 +36,7 @@ type S3Versions interface {
 
 type s3Versions struct {
 	config *config.Config
-	s3     *s3.S3
+	s3     s3api.S3API
 }
 
 // New create a new S3Versions instance
@@ -170,10 +171,7 @@ func (v *s3Versions) findAndRemoveVersions(bucket string) error {
 
 	versionsToDelete := v.computeAndPrintVersionsInfo(bucket, fileVersions)
 	if v.config.Confirm {
-		err = v.deleteS3Versions(bucket, versionsToDelete)
-		if err != nil {
-			return err
-		}
+		return v.deleteS3Versions(bucket, versionsToDelete)
 	}
 
 	return nil
