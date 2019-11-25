@@ -107,8 +107,6 @@ func (v *s3Versions) getAllBuckets() ([]string, error) {
 }
 
 func (v *s3Versions) existsBucket(name string) (bool, error) {
-	log.Println("Check if bucket exists ...")
-
 	input := &s3.HeadBucketInput{
 		Bucket: aws.String(name),
 	}
@@ -295,7 +293,7 @@ func (v *s3Versions) computeAndPrintVersionsInfo(bucket string, fileVersions map
 		}
 	}
 
-	log.Printf("Total space recoved for %s: %s", bucket, humanize.Bytes(uint64(spaceRecovered)))
+	log.Printf("Total space recovered for %s: %s", bucket, humanize.Bytes(uint64(spaceRecovered)))
 	log.Printf("Total versions to delete for %s: %d", bucket, len(versionsToDelete))
 
 	return versionsToDelete
