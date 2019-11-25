@@ -1,5 +1,5 @@
-delete-s3-version: a go library for deleting older versions of S3 files
-=======================================================================
+delete-s3-version: a go library for deleting S3 file versions
+=============================================================
 
 This library provides functionality to delete versions of S3 files. It finds the buckets that have
 [versioning enabled](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/enable-versioning.html)
@@ -33,7 +33,7 @@ Help Options:
   -h, --help            Show this help message
 ```
 
-Examples:
+## Examples
 
 - Print all buckets summary for the versions about to delete, while keeping the latest 4 changes unchanged.
 
