@@ -179,6 +179,8 @@ func (v *s3Versions) getFileVersions(bucket string) (map[string][]*fileVersion, 
 	log.Printf("Get file versions for %s/%s", bucket, v.config.BucketPrefix)
 	fileVersions := map[string][]*fileVersion{}
 
+	var totalSize int64
+
 	var keyMarker *string
 	pageNumber := 1
 	versionCount := 0
@@ -200,7 +202,7 @@ func (v *s3Versions) getFileVersions(bucket string) (map[string][]*fileVersion, 
 
 		log.Printf("\tGot %d versions for page %d", pageVersionCount, pageNumber)
 
-		appendFileVersions(fileVersions, response.Versions)
+		totalSize += appendFileVersions(fileVersions, response.Versions)
 		appendDeleteMarkers(fileVersions, response.DeleteMarkers)
 
 		versionCount += pageVersionCount
@@ -213,12 +215,14 @@ func (v *s3Versions) getFileVersions(bucket string) (map[string][]*fileVersion, 
 		pageNumber++
 	}
 
-	log.Printf("Summary: %d file versions for %d files", versionCount, len(fileVersions))
+	log.Printf("Summary: %d file versions for %d files (total size: %s)", versionCount, len(fileVersions), humanize.Bytes(uint64(totalSize)))
 
 	return fileVersions, nil
 }
 
-func appendFileVersions(fileVersions map[string][]*fileVersion, additionalVersions []*s3.ObjectVersion) {
+func appendFileVersions(fileVersions map[string][]*fileVersion, additionalVersions []*s3.ObjectVersion) int64 {
+	var size int64
+
 	for _, version := range additionalVersions {
 		fv := &fileVersion{
 			Key:            *version.Key,
@@ -234,7 +238,11 @@ func appendFileVersions(fileVersions map[string][]*fileVersion, additionalVersio
 		} else {
 			fileVersions[fv.Key] = []*fileVersion{fv}
 		}
+
+		size += *version.Size
 	}
+
+	return size
 }
 
 func appendDeleteMarkers(fileVersions map[string][]*fileVersion, deleteMarkers []*s3.DeleteMarkerEntry) {
